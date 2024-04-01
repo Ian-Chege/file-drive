@@ -3,6 +3,7 @@ import { Inter } from "next/font/google"
 
 import ConvexClientProvider from "./ConvexClientProvider"
 import { Header } from "@/components/header"
+import { Toaster } from "@/components/ui/toaster"
 
 import "./globals.css"
 
@@ -24,6 +25,7 @@ export default function RootLayout({
         <ConvexClientProvider>
           <Header />
           {children}
+          <Toaster />
         </ConvexClientProvider>
       </body>
     </html>

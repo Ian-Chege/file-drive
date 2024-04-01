@@ -29,6 +29,7 @@ import { api } from "../../convex/_generated/api"
 
 import { z } from "zod"
 import { useState } from "react"
+import { useToast } from "@/components/ui/use-toast"
 
 const formSchema = z.object({
   title: z.string().min(1).max(50),
@@ -41,6 +42,7 @@ export default function Home() {
   const [isFileDialogOpen, setIsFileDialogOpen] = useState(false)
   const organization = useOrganization()
   const user = useUser()
+  const { toast } = useToast()
   let orgId: string | undefined = undefined
   const generateUploadUrl = useMutation(api.files.generateUploadUrl)
 
@@ -67,11 +69,23 @@ export default function Home() {
       body: values.file[0],
     })
     const { storageId } = await result.json()
-
-    await createFile({ name: values.title, fileId: storageId, orgId })
-
-    form.reset()
-    setIsFileDialogOpen(false)
+    try {
+      await createFile({ name: values.title, fileId: storageId, orgId })
+      form.reset()
+      setIsFileDialogOpen(false)
+      toast({
+        variant: "success",
+        title: "File uploaded",
+        description: "Your file has been uploaded successfully.",
+      })
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "An error occurred while uploading your file.",
+      })
+      return
+    }
   }
 
   if (organization.isLoaded && user.isLoaded) {
@@ -84,7 +98,13 @@ export default function Home() {
     <main className="container mx-auto p-12">
       <div className="flex justify-between items-center">
         <h1 className="text-4xl font-bold">Your files</h1>
-        <Dialog open={isFileDialogOpen} onOpenChange={setIsFileDialogOpen}>
+        <Dialog
+          open={isFileDialogOpen}
+          onOpenChange={(isOpen) => {
+            setIsFileDialogOpen(isOpen)
+            form.reset()
+          }}
+        >
           <DialogTrigger asChild>
             <Button onClick={() => {}}>Upload file</Button>
           </DialogTrigger>
