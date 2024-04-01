@@ -30,6 +30,7 @@ import { api } from "../../convex/_generated/api"
 import { z } from "zod"
 import { useState } from "react"
 import { useToast } from "@/components/ui/use-toast"
+import { Loader2 } from "lucide-react"
 
 const formSchema = z.object({
   title: z.string().min(1).max(50),
@@ -144,7 +145,16 @@ export default function Home() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit">Upload</Button>
+                    <Button
+                      type="submit"
+                      disabled={form.formState.isSubmitting}
+                      className="flex gap-1"
+                    >
+                      {form.formState.isSubmitting && (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      )}
+                      Upload
+                    </Button>
                   </form>
                 </Form>
               </DialogDescription>
