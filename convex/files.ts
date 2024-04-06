@@ -49,11 +49,18 @@ export const createFile = mutation({
       )
     }
 
+    const fileUrl = await ctx.storage.getUrl(args.fileId)
+    if (!fileUrl) {
+      throw new ConvexError("file not found")
+    }
+
     await ctx.db.insert("files", {
       name: args.name,
       fileId: args.fileId,
       orgId: args.orgId,
       type: args.type,
+      // userId: hasAccess.user._id,
+      url: fileUrl,
     })
   },
 })
